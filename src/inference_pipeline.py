@@ -1,9 +1,11 @@
 import json
 import logging
 from datetime import datetime
-from logging_classes import CSVFileHandler
-from vector_database_ingestion_pipeline import VectorIngestion
-from data_ingestion_pipeline import DataIngestionPipeline
+from src.logging_classes import CSVFileHandler
+from src.vector_database_ingestion_pipeline import VectorIngestion
+from src.data_ingestion_pipeline import DataIngestionPipeline
+from openai import OpenAI
+import os
 
 class InferenceClass(VectorIngestion):
     def __init__(self, ingestion_pipeline, open_source_mode, log_file: str = 'logs/inference_logs.csv'):
@@ -25,6 +27,7 @@ class InferenceClass(VectorIngestion):
         console_handler.setFormatter(console_formatter)
         console_handler.setLevel(logging.INFO)
 
+
         # CSV file handler
         csv_handler = CSVFileHandler(log_file)
         csv_handler.setLevel(logging.INFO)
@@ -34,7 +37,9 @@ class InferenceClass(VectorIngestion):
         self.logger.addHandler(csv_handler)
 
         self.ingestion_pipeline = ingestion_pipeline
-        self.model_name = "mistralai/Mixtral-8x7B-Instruct-v0.1"  #"mistralai/Mistral-Nemo-Instruct-2407", 
+        # self.model_name = "mistralai/Mixtral-8x7B-Instruct-v0.1"  #"mistralai/Mistral-Nemo-Instruct-2407",
+        self.model_name = "gpt-3.5-turbo"
+        self.openai_client = OpenAI( api_key=os.environ.get("OPENAI_API_KEY")) 
         self.logger.info(f"Initialized inference pipeline with model: {self.model_name}")
 
 
@@ -75,7 +80,11 @@ __context__
             relevant_context = []
 
             self.logger.info("Querying chromaDB vector stores...")
-            results = self.vector_store.similarity_search(query, k=3)
+            try:
+                results = self.vector_store.similarity_search(query, k=3)
+            except Exception as e:
+                self.logger.error(f"Error in vector store query: {str(e)}")
+                raise
 
             for res in results:
                 metadata = res.metadata
@@ -84,13 +93,17 @@ __context__
                 question_bodies.append(metadata['question_body'])
                 tags.append(metadata['tags'])
 
-            self.logger.debug(f"Retrieved {len(question_ids)} documents from vector store")
+            self.logger.info(f"Retrieved {len(question_ids)} documents from vector store")
 
             sql_query = self.sql_query.replace("_question_ids_", str(','.join([f'{i}' for i in question_ids])))
             self.logger.debug("Executing SQL query to fetch answers")
 
+            self.logger.info("SQL Query: " + sql_query)
+
             answers = self.ingestion_pipeline.query_data(sql_query)['answers'].to_list()
-            relevant_context = "\n\n".join([ans['answer_body'] for answer in answers for ans in json.loads(answer)[:2]])
+            print(answers,flush=True)
+
+            relevant_context = "\n\n".join([ans['answer_body'] for answer in answers for ans in answer[:2]])
 
             total_inputs_vectors = len(question_ids)
             self.logger.info(f"Retrieved {total_inputs_vectors} relevant documents")
@@ -128,27 +141,43 @@ __context__
             # Make LLM call
             self.logger.info(f"Making LLM API call to {self.model_name}")
             llm_start = datetime.now()
-            response = self.hf_client.chat.completions.create(
+        
+            
+
+            completion = self.openai_client.chat.completions.create(
                 model=self.model_name,
-                messages=messages,
-                max_tokens=600,
-                stream=stream
+                messages=[
+                    {
+                        "role": "user",
+                        "content": prompt
+                    }
+                ]
             )
+            response_text = completion.choices[0].message.content
+            print(response_text)
+
+            # response = self.hf_client.chat.completions.create(
+            #     model=self.model_name,
+            #     messages=messages,
+            #     max_tokens=600,
+            #     stream=stream
+            # )
 
             print("\n\n")
             print("-"*180)
             print(f"\n\n\nQuestion: {query}\n\nAnswer: ")
 
             # Handle streaming vs non-streaming response
-            if stream:
-                response_text = ""
-                for chunk in response:
-                    chunk_text = chunk.choices[0].delta.content
-                    response_text += chunk_text
-                    print(chunk_text, end="")
-            else:
-                response_text = response.choices[0].message.content
-                print(response_text)
+            # if stream:
+            #     pass
+            #     response_text = ""
+            #     for chunk in response:
+            #         chunk_text = chunk.choices[0].delta.content
+            #         response_text += chunk_text
+            #         print(chunk_text, end="")
+            # else:
+            # response_text = response.choices[0].message.content
+                # print(response_text)
 
             llm_time = (datetime.now() - llm_start).total_seconds()
             self.logger.info(f"LLM response completed in {llm_time:.2f} seconds")
@@ -164,38 +193,39 @@ __context__
 
             print("\n")
             print("-"*180)
+            return response_text
 
         except Exception as e:
             self.logger.error(f"Error in LLM call: {str(e)}")
             raise
 
 
-if __name__ == "__main__":
-    #Initialize the inference class
-    data_ingestion_pipeline = DataIngestionPipeline()
-    inference_instance = InferenceClass(
-    ingestion_pipeline=data_ingestion_pipeline,
-    open_source_mode=True,
-    log_file='inference_logs.csv'
-)
-    # query = "What is python's list comprehension?"
-    # query = "how to sort python dictionary on the basis of values?"
-    # query = "what are the generators in python?"
-    # query = "what are the OOP concepts in python?"
-    # query = "what is the difference between lists and tuples?"
-    query = "what GIL lock in python?"
-    # query = "How to reverse a list in Python?"
-    # query = "what the whether like in new york"
+# if __name__ == "__main__":
+#     #Initialize the inference class
+#     data_ingestion_pipeline = DataIngestionPipeline()
+#     inference_instance = InferenceClass(
+#     ingestion_pipeline=data_ingestion_pipeline,
+#     open_source_mode=True,
+#     log_file='inference_logs.csv'
+# )
+#     # query = "What is python's list comprehension?"
+#     # query = "how to sort python dictionary on the basis of values?"
+#     # query = "what are the generators in python?"
+#     # query = "what are the OOP concepts in python?"
+#     # query = "what is the difference between lists and tuples?"
+#     query = "what GIL lock in python?"
+#     # query = "How to reverse a list in Python?"
+#     # query = "what the whether like in new york"
 
-    # verbose = True
-    # stream = True
-    # inference_instance.llm_call(query,verbose,stream)
+#     # verbose = True
+#     # stream = True
+#     # inference_instance.llm_call(query,verbose,stream)
 
 
-    verbose = True
-    stream = True
+#     verbose = True
+#     stream = True
 
-    # response_df = inference.retriever(query,verbose)
-    while True:
-        query = input("Please enter your python related query....\n")
-        inference_instance.llm_call(query,verbose,stream)
+#     # response_df = inference.retriever(query,verbose)
+#     while True:
+#         query = input("Please enter your python related query....\n")
+#         inference_instance.llm_call(query,verbose,stream)
