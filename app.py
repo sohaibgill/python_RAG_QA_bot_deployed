@@ -5,7 +5,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import logging
 import os
-from schemas.config import settings
+from src.schemas.config import settings
 from src.api import api_router
 
 
