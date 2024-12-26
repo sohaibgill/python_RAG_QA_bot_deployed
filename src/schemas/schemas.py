@@ -12,3 +12,8 @@ class query_input(BaseModel):
 class Health(BaseModel):
     name: str
     api_version: str
+
+class queryInput(BaseModel):
+    query: str
+    verbose: bool
+    stream: bool
