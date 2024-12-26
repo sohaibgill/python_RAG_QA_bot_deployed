@@ -54,8 +54,8 @@ This project is a Retrieval-Augmented Generation (RAG) Question Answering (QA) b
     Create a [.env](http://_vscodecontentref_/7) file in the root directory with the following content:
 
     ```env
-    HuggingFace_API_KEY= "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"
-    VoyageAI_API_KEY="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"
+    HuggingFace_API_KEY= "api_key"
+    VoyageAI_API_KEY="api_key"
     ```
 
 ### Running the Application
