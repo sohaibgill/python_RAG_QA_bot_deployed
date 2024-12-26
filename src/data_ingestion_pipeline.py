@@ -1,6 +1,6 @@
 import logging
 import pandas as pd
-from logging_classes import CSVFileHandler
+from src.logging_classes import CSVFileHandler
 from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
 import psycopg2
 import concurrent.futures
@@ -8,8 +8,8 @@ from typing import List,Dict,Any
 import json
 import re
 from tqdm import tqdm
-from data_cleaning import DataPreprocessor
-from logging_classes import CSVFileHandler
+from src.data_cleaning import DataPreprocessor
+from src.logging_classes import CSVFileHandler
 import os
 
 
@@ -22,7 +22,7 @@ class DataIngestionPipeline:
         self.preprocessor = DataPreprocessor()
         postgresDB_hostname = os.environ["postgresDB_hostname"]
         self.db_config = {
-            "host": f"{postgresDB_hostname}",
+            "host": postgresDB_hostname,
             "database": "postgres",
             "user": "postgres",
             "password": "12345",
