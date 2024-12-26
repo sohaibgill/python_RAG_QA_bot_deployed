@@ -1,3 +1,3 @@
 data_ingestion_logs.py  
 pipeline_logs.py
-chroma_db/*
+*/chroma_db/*
