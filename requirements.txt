@@ -14,3 +14,4 @@ langchain_huggingface
 pysqlite3==0.5.4 
 psycopg2-binary==2.9.10
 sqlalchemy
+openai
