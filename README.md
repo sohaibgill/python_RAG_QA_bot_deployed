@@ -2,6 +2,24 @@
 
 This project is a Retrieval-Augmented Generation (RAG) Question Answering (QA) bot deployed using FastAPI. The bot is designed to generate responses to user queries related to Python by leveraging a combination of retrieval and generation techniques.
 
+## Table of Contents
+
+- [Project Structure](#project-structure)
+- [Setup Instructions](#setup-instructions)
+  - [Prerequisites](#prerequisites)
+  - [Installation](#installation)
+  - [Running the Application](#running-the-application)
+  - [Docker Deployment](#docker-deployment)
+- [Project Components](#project-components)
+- [Logs](#logs)
+- [Database](#database)
+- [Environment Variables](#environment-variables)
+- [Ignored Files](#ignored-files)
+- [License](#license)
+- [Acknowledgements](#acknowledgements)
+
+## Project Structure
+
 ## Setup Instructions
 
 ### Prerequisites
@@ -64,8 +82,6 @@ This project is a Retrieval-Augmented Generation (RAG) Question Answering (QA) b
     docker run -p 8001:8001 python_rag_qa_bot
     ```
 
-## Project Structure
-
 ## Project Components
 
 ### [app.py](http://_vscodecontentref_/8)
@@ -86,7 +102,7 @@ Manages the data ingestion pipeline, including reading the dataset and inserting
 
 ### [inference_pipeline.py](http://_vscodecontentref_/12)
 
-Handles the inference pipeline for generating responses to user queries.
+Handles the inference pipeline for generating responses to user queries. It initializes the inference pipeline with logging and sets up the necessary configurations for OpenAI.
 
 ### [logging_classes.py](http://_vscodecontentref_/13)
 
@@ -111,7 +127,7 @@ Manages the ingestion of data into a vector database.
 
 ## Database
 
-- [chroma_db](http://_vscodecontentref_/19): Directory containing the Chroma database files.
+- `chroma_db`: Directory containing the Chroma database files.
 
 ## Environment Variables
 
@@ -120,8 +136,8 @@ Manages the ingestion of data into a vector database.
 
 ## Ignored Files
 
-- [.dockerignore](http://_vscodecontentref_/20): Specifies files to ignore when building the Docker image.
-- [.gitignore](http://_vscodecontentref_/21): Specifies files to ignore in the Git repository.
+- [.dockerignore](http://_vscodecontentref_/19): Specifies files to ignore when building the Docker image.
+- [.gitignore](http://_vscodecontentref_/20): Specifies files to ignore in the Git repository.
 
 ## License
 
