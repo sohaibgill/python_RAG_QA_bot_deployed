@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  pythonqa-app:
+    container_name: pythonqa-app 
+    build: .
+    ports:
+      - "8001:8001"
+    env_file:
+      - .env
+    volumes:
+      - /Users/sohaibgill/Desktop/git_repos/python-RAG-app-data:/code/data
+    networks:
+      - qa-app-network
+
+  postgres-db:
+    image: postgres
+    container_name: postgres-db
+    environment:
+      - POSTGRES_PASSWORD=12345
+    volumes:
+      - /Users/sohaibgill/Desktop/git_repos/postgresDB:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - qa-app-network
+    restart: always
+
+networks:
+  qa-app-network:
+    driver: bridge
