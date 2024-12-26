@@ -8,7 +8,7 @@ from openai import OpenAI
 import os
 
 class InferenceClass(VectorIngestion):
-    def __init__(self, ingestion_pipeline, open_source_mode, log_file: str = 'logs/inference_logs.csv'):
+    def __init__(self, ingestion_pipeline, open_source_mode, log_file: str = './data/logs/inference_logs.csv'):
         """Initialize the inference pipeline with logging."""
         super().__init__(open_source_mode)
 

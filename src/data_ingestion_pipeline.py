@@ -333,7 +333,7 @@ if __name__ == "__main__":
     data_ingestion_pipeline = DataIngestionPipeline(
         db_path='stackoverflow.db',
         chunk_size=10000,
-        log_file='data_ingestion_logs.csv'
+        log_file='./data/logs/data_ingestion_logs.csv'
     )
     dataset_file_path = "python_stackover_flow_dataset.csv"
     data_ingestion_pipeline.ingest_data(dataset_file_path)
