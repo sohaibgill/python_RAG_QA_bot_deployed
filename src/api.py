@@ -33,7 +33,7 @@ def populate_vectors(request: populate_vectors_input):
     """
     Populate vectors in the vector database.
     """
-    postgresDB_hostname = os.environ["postgresDB_hostname"]
+    postgresDB_hostname = os.environ["hostname"]
     print(f"postgresDB_hostname: {postgresDB_hostname}",flush=True) 
     open_source_mode = request.open_source_mode
     

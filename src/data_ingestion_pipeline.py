@@ -20,13 +20,12 @@ class DataIngestionPipeline:
         self.db_path = db_path
         self.chunk_size = chunk_size
         self.preprocessor = DataPreprocessor()
-        postgresDB_hostname = os.environ["postgresDB_hostname"]
         self.db_config = {
-            "host": postgresDB_hostname,
-            "database": "postgres",
-            "user": "postgres",
-            "password": "12345",
-            "port": "5432"
+            "host": os.environ["hostname"],
+            "database": os.environ["database"],
+            "user": os.environ["user"],
+            "password": os.environ["password"],
+            "port": os.environ["port"]
         }
         # Setup logging
         self.logger = logging.getLogger(__name__)
