@@ -10,7 +10,10 @@ import re
 from tqdm import tqdm
 from src.data_cleaning import DataPreprocessor
 from src.logging_classes import CSVFileHandler
+
 import os
+from dotenv import load_dotenv
+load_dotenv()
 
 
 # Data Ingestion pipeline.
