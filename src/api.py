@@ -7,7 +7,7 @@ from src.schemas.config import settings
 from src.inference_pipeline import InferenceClass
 import os
 
-open_source_mode=True
+open_source_mode=False
 api_router = APIRouter()
 data_ingestion_pipeline = DataIngestionPipeline()
 inference_instance = InferenceClass(
@@ -38,7 +38,7 @@ def populate_vectors(request: populate_vectors_input):
     open_source_mode = request.open_source_mode
     
         #Fetching all the records of python_stackOverFlow as a dataframe from the sqlite database
-    sql_query = "select * from stackoverflow_posts"
+    sql_query = "select * from stackoverflow_posts limit 1000"
     try:
         df = data_ingestion_pipeline.query_data(sql_query)
         print(f"Data fetched from the database\n Total count of data: {df.shape[0]}",flush=True)
