@@ -3,7 +3,7 @@ __import__('pysqlite3')
 import sys
 sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
 from huggingface_hub import InferenceClient
-# from langchain_voyageai import VoyageAIEmbeddings
+from langchain_voyageai import VoyageAIEmbeddings
 from langchain_core.documents import Document
 from langchain_chroma import Chroma
 import voyageai
@@ -31,12 +31,14 @@ class VectorIngestion:
 
 
     if self.open_source_mode:
-      #dowload model and tokenizer
+      print(f"Open Source Embedding Model Intialized...\n")
       embeddings_model = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
       collection_name = "hf_collection"
 
     else:
       # Initialize Voyageai
+      print(f"VoyageAI Embedding Model Intialized...\n")
+      print(f"VoyageAI API Key: {self.VOYAGEAI_API_KEY}")
       embeddings_model = VoyageAIEmbeddings(api_key = self.VOYAGEAI_API_KEY ,  model="voyage-large-2-instruct")
       collection_name = "voyageai_collection"
 
@@ -47,10 +49,10 @@ class VectorIngestion:
       persist_directory="./data/chroma_db",  # Where to save data locally, remove if not necessary
     )
 
-    print(f"ChromaDB Vector Store Intialized...\n")
-    print(f"Index named {self.index_name} created...\n")
-    print(f"Embedding Model Intialized...\n")
-    print(f"HuggingFace LLM Client Intialized...\n")
+    print(f"ChromaDB Vector Store Intialized...")
+    print(f"Index named {self.index_name} created...")
+    print(f"Embedding Model Intialized...")
+    print(f"Collection '{collection_name}' Intialized...\n")
 
 
   def data_parsing(self,df):

@@ -55,11 +55,11 @@ class DataIngestionPipeline:
         self.logger.info("Creating database schema")
          # Establish a connection
         with psycopg2.connect(
-                    host="localhost",
-                    database="postgres",
-                    user="postgres",
-                    password="12345",
-                    port="5432"
+                    host=os.environ["hostname"],
+                    database=os.environ["database"],
+                    user=os.environ["user"],
+                    password=os.environ["password"],
+                    port=os.environ["port"]
                 )    as con:
             conn = con.cursor()
             # Enable WAL mode for better concurrent access
@@ -315,11 +315,11 @@ class DataIngestionPipeline:
     def get_connection(self) -> psycopg2.extensions.connection:
         """Create and return a database connection."""
         with psycopg2.connect(
-                    host="localhost",
-                    database="postgres",
-                    user="postgres",
-                    password="12345",
-                    port="5432"
+                    host=os.environ["hostname"],
+                    database=os.environ["database"],
+                    user=os.environ["user"],
+                    password=os.environ["password"],
+                    port=os.environ["port"]
                 )    as con:
             conn = con.cursor()
 
