@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 
 class populate_vectors_input(BaseModel):
-    open_source_mode: str
+    open_source_mode: bool
 
 class query_input(BaseModel):
     query: str
