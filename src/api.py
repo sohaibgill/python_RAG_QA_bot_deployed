@@ -9,9 +9,7 @@ import os
 
 open_source_mode=False
 api_router = APIRouter()
-data_ingestion_pipeline = DataIngestionPipeline()
 inference_instance = InferenceClass(
-ingestion_pipeline=data_ingestion_pipeline,
 open_source_mode=open_source_mode,
 log_file='inference_logs.csv')
 inject_vectors = VectorIngestion(open_source_mode)
@@ -40,7 +38,7 @@ def populate_vectors(request: populate_vectors_input):
         #Fetching all the records of python_stackOverFlow as a dataframe from the sqlite database
     sql_query = "select * from stackoverflow_posts limit 1000"
     try:
-        df = data_ingestion_pipeline.query_data(sql_query)
+        df = DataIngestionPipeline.query_data(sql_query)
         print(f"Data fetched from the database\n Total count of data: {df.shape[0]}",flush=True)
     except Exception as e:
         print(f"Error in fetching data from the database: {str(e)}")

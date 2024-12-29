@@ -289,15 +289,22 @@ class DataIngestionPipeline:
     #     except Exception as e:
     #         self.logger.error(f"Error executing query: {str(e)}")
     #         raise
-
-    def query_data(self, query: str) -> pd.DataFrame:
+    @staticmethod
+    def query_data(query: str) -> pd.DataFrame:
         """Execute a query and return results as DataFrame."""
+        db_config = {
+            "host": os.environ["hostname"],
+            "database": os.environ["database"],
+            "user": os.environ["user"],
+            "password": os.environ["password"],
+            "port": os.environ["port"]
+        }
         try:
             from sqlalchemy import create_engine
-            engine = create_engine(f'postgresql://{self.db_config["user"]}:{self.db_config["password"]}@{self.db_config["host"]}:{self.db_config["port"]}/{self.db_config["database"]}')
+            engine = create_engine(f'postgresql://{db_config["user"]}:{db_config["password"]}@{db_config["host"]}:{db_config["port"]}/{db_config["database"]}')
             return pd.read_sql_query(query, engine)
         except Exception as e:
-            self.logger.error(f"Error executing query: {str(e)}")
+            print(f"Error executing query: {str(e)}",flush=True)
             raise
 
     def get_post_statistics(self) -> Dict[str, Any]:

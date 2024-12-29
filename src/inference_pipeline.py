@@ -8,7 +8,7 @@ from openai import OpenAI
 import os
 
 class InferenceClass(VectorIngestion):
-    def __init__(self, ingestion_pipeline, open_source_mode, log_file: str = './data/logs/inference_logs.csv'):
+    def __init__(self, open_source_mode, log_file: str = './data/logs/inference_logs.csv'):
         """Initialize the inference pipeline with logging."""
         super().__init__(open_source_mode)
 
@@ -36,7 +36,6 @@ class InferenceClass(VectorIngestion):
         self.logger.addHandler(console_handler)
         self.logger.addHandler(csv_handler)
 
-        self.ingestion_pipeline = ingestion_pipeline
         # self.model_name = "mistralai/Mixtral-8x7B-Instruct-v0.1"  #"mistralai/Mistral-Nemo-Instruct-2407",
         self.model_name = "gpt-3.5-turbo"
         self.openai_client = OpenAI( api_key=os.environ.get("OPENAI_API_KEY")) 
@@ -100,7 +99,7 @@ __context__
 
             self.logger.info("SQL Query: " + sql_query)
 
-            answers = self.ingestion_pipeline.query_data(sql_query)['answers'].to_list()
+            answers = DataIngestionPipeline.query_data(sql_query)['answers'].to_list()
             print(answers,flush=True)
 
             relevant_context = "\n\n".join([ans['answer_body'] for answer in answers for ans in answer[:2]])
