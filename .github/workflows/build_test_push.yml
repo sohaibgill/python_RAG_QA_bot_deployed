@@ -1,0 +1,39 @@
+name: Build Test Push
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        steps:
+        - uses: actions/checkout@v3
+        - name: Set up Python 3.12
+          uses: actions/setup-python@v4
+          with:
+            python-version: 3.12
+
+        - name: Install dependencies
+          run: |
+            python -m pip install --upgrade pip
+            pip install -r requirements.txt
+
+        - name: Run tests
+          run: |
+            python -m pytest
+
+        - name: Build Docker image
+          run: |
+            docker build . -t pythonqa-app:latest
+
+        - name: Run tests in Docker container
+          run: |
+            docker run pythonqa-app:latest /bin/sh -c "pytest"
+          
+        - name: Push Docker image
+          run: |
+            echo ${{ secrets.DOCKER_PASSWORD }} | docker login ghcr.io -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+            docker tag pythonqa-app ghcr.io/sohaibgill/pythonqa-app
+            docker push ghcr.io/sohaibgill/pythonqa-app
