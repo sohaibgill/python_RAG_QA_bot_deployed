@@ -79,10 +79,10 @@ class DataPreprocessor:
 
         try:
             # Extract code blocks before cleaning
-            code_blocks = self.code_block_pattern.findall(html_text)
+            code_blocks = self.code_block_pattern.findall(html_text) 
 
             # Use BeautifulSoup for HTML parsing
-            soup = BeautifulSoup(html_text, 'html.parser')
+            soup = BeautifulSoup(html_text, 'html.parser') 
 
             # Remove script and style elements
             for script in soup(["script", "style"]):
